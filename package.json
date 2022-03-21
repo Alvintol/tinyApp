@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/Alvintol/tinyApp/issues"
   },
-  "homepage": "https://github.com/Alvintol/tinyApp#readme"
+  "homepage": "https://github.com/Alvintol/tinyApp#readme",
+  "dependencies": {
+    "express": "^4.17.3"
+  }
 }
