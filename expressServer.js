@@ -36,6 +36,13 @@ app.get('/urls/:shortURL', (req, res) => {
   res.render('urlsShow', templateVars);
 })
 
+app.post('/urls/:shortURL/delete', (req, res) => {
+  const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL] };
+  console.log('URL Deleted: ', templateVars);
+  delete urlDatabase[req.params.shortURL];
+  res.redirect('/urls');
+})
+
 app.get("/u/:shortURL", (req, res) => {
   const longURL = req.params.longURL;
   res.redirect(longURL);
@@ -55,10 +62,10 @@ generateRandomString = () => {
 };
 
 app.post("/urls", (req, res) => {
-  console.log(req.body);  // Log the POST request body to the console 
   const randomID = generateRandomString();
   urlDatabase[`${randomID}`] = req.body.longURL;
   const templateVars = { shortURL: randomID, longURL: urlDatabase[randomID] };
+  console.log('New URL stored: ', templateVars);  // Log the POST request body to the console 
   res.render('urlsShow', templateVars);
 });
 
