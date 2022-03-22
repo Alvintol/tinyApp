@@ -27,8 +27,7 @@ app.get("/urls", (req, res) => {
   res.render("urlsIndex", templateVars);
 });
 
-app.get("/urls/new", (req, res) => {
- 
+app.get("/urls/new", (req, res) => { 
   res.render("urlsNew");
 });
 
@@ -41,11 +40,6 @@ app.get('/hello', (req, res) => {
   res.send('<html><body>Hello <b>World</b></body></html>\n');
 });
 
-app.post("/urls", (req, res) => {
-  console.log(req.body);  // Log the POST request body to the console
-  res.send("Ok");         // Respond with 'Ok' (we will replace this)
-});
-
 generateRandomString = () => {
   const charList = "abcdefghijklmnopqrstuvwxyz0123456789"
   const randomID = [];
@@ -54,6 +48,16 @@ generateRandomString = () => {
   }
   return randomID.join('');
 };
+
+app.post("/urls", (req, res) => {
+  console.log(req.body.longURL);  // Log the POST request body to the console 
+  const randomID = generateRandomString();
+  urlDatabase[`${randomID}`] = req.body.longURL;
+  const templateVars = { shortURL: `${randomID}`, longURL: `${urlDatabase[randomID]}` };
+  res.render('urlsShow', templateVars);
+});
+
+
 
 app.listen(PORT, () => {
   console.log(`Example app listneing on port ${PORT}!`);
