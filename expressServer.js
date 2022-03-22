@@ -41,6 +41,20 @@ app.get('/hello', (req, res) => {
   res.send('<html><body>Hello <b>World</b></body></html>\n');
 });
 
+app.post("/urls", (req, res) => {
+  console.log(req.body);  // Log the POST request body to the console
+  res.send("Ok");         // Respond with 'Ok' (we will replace this)
+});
+
+generateRandomString = () => {
+  const charList = "abcdefghijklmnopqrstuvwxyz0123456789"
+  const randomID = [];
+  while (randomID.length < 6) {
+    randomID.push(charList[Math.floor(Math.random() * charList.length)]);
+  }
+  return randomID.join('');
+};
+
 app.listen(PORT, () => {
   console.log(`Example app listneing on port ${PORT}!`);
 });
