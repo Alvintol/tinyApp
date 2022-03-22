@@ -1,6 +1,7 @@
 const express = require('express');
 const { set } = require('express/lib/response');
 const res = require('express/lib/response');
+const morgan = require('morgan');
 const app = express();
 const PORT = 8080;
 
@@ -8,6 +9,7 @@ const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended: true}));
 
 app.set('view engine', 'ejs');
+app.use(morgan('dev'));
 
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
@@ -65,7 +67,7 @@ app.post("/urls", (req, res) => {
   const randomID = generateRandomString();
   urlDatabase[`${randomID}`] = req.body.longURL;
   const templateVars = { shortURL: randomID, longURL: urlDatabase[randomID] };
-  console.log('New URL stored: ', templateVars);  // Log the POST request body to the console 
+  console.log('New URL stored: ', templateVars);
   res.render('urlsShow', templateVars);
 });
 
