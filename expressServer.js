@@ -4,6 +4,9 @@ const res = require('express/lib/response');
 const app = express();
 const PORT = 8080;
 
+const bodyParser = require("body-parser");
+app.use(bodyParser.urlencoded({extended: true}));
+
 app.set('view engine', 'ejs');
 
 const urlDatabase = {
@@ -22,6 +25,11 @@ app.get("/urls.json", (req, res) => {
 app.get("/urls", (req, res) => {
   const templateVars = { urls: urlDatabase };
   res.render("urlsIndex", templateVars);
+});
+
+app.get("/urls/new", (req, res) => {
+ 
+  res.render("urlsNew");
 });
 
 app.get('/urls/:shortURL', (req, res) => {
