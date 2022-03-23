@@ -58,16 +58,22 @@ app.post('/register', (req, res) => {
   };
   console.log('New User Created:', users[randomID]);
 
-  if (!users[randomID].password || !users[randomID].email) {
-    return res.status(400).json({ msg: 'Please include password and email' })
-  };
   const templateVars = {
     id: req.body.email,
     urls: urlDatabase,
   }
-  res.cookie('userCookie', randomID)
-  console.log(users)
-  res.render('urlsIndex', templateVars);
+
+  if (!users[randomID].password || !users[randomID].email) {
+    return res.status(400).json({ ERROR_400: 'Please include password and email' })
+  };
+  for (const user in users) {
+    if (users[user].email == req.body.email) {
+      return res.status(400).json({ ERROR_400: 'Email already registered' })
+    } else {
+      res.cookie('userCookie', randomID)
+      res.render('urlsIndex', templateVars);
+    }
+  }
 });
 
 app.get('/register', (req, res) => {
