@@ -1,5 +1,5 @@
 const express = require('express');
-const { set, redirect } = require('express/lib/response');
+const { set, redirect, clearCookie } = require('express/lib/response');
 const res = require('express/lib/response');
 const morgan = require('morgan');
 const cookieParser = require('cookie-parser');
@@ -18,6 +18,16 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
+// const validCookie = (req, res, next) => {
+//   const { cookies } = req;
+//   if (cookies) {
+//     res.status(403).send({ERROR_403: 'Not Authenticated. Please login'});
+//     next();
+//   } else {
+//     next();
+//   }
+// };
+
 app.get('/', (req, res) => {
   res.send('Hello!');
 });
@@ -26,23 +36,17 @@ app.get('/login', (req, res) => {
   res.render('login');
 })
 
-validCookie = (req, res, next) => {
-  const { cookies } = req;
-  if ('username' in cookies) {
-    next();
-  } else {
-    res.status(403).send({ERROR_403: 'Not Authenticated'})
+app.post('/login', (req, res) => {
+  if (req.body.username === ''){
+    res.render('login');
+    return;
   }
-}
-
-app.post('/login', validCookie, (req, res) => {
-  const { cookies } = req;
   res.cookie('username', req.body.username);
-  console.log(cookies)
   res.redirect('/urls');
 });
 
 app.post('/logout', (req, res) => {
+  res.clearCookie('username', req.body.username);
   res.render('login');
 })
 
@@ -50,20 +54,20 @@ app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
 
-app.get("/urls", validCookie, (req, res) => {
+app.get("/urls", (req, res) => {
   const templateVars = {
     username: req.cookies['username'],
     urls: urlDatabase
   };
-  res.render("urlsIndex", validCookie, templateVars);
+  res.render("urlsIndex", templateVars);
 });
 
-app.get("/urls/new", validCookie, (req, res) => {
+app.get("/urls/new", (req, res) => {
   const templateVars = { username: req.cookies['username'] };
   res.render("urlsNew", templateVars);
 });
 
-app.get('/urls/:shortURL', validCookie, (req, res) => {
+app.get('/urls/:shortURL', (req, res) => {
   const templateVars = {
     username: req.cookies["username"],
     shortURL: req.params.shortURL,
@@ -72,7 +76,7 @@ app.get('/urls/:shortURL', validCookie, (req, res) => {
   res.render('urlsShow', templateVars);
 })
 
-app.post('/urls/:shortURL/delete', validCookie, (req, res) => {
+app.post('/urls/:shortURL/delete', (req, res) => {
   const templateVars = {
     username: req.cookies["username"],
     shortURL: req.params.shortURL,
@@ -84,7 +88,7 @@ app.post('/urls/:shortURL/delete', validCookie, (req, res) => {
 })
 
 
-app.get("/u/:shortURL", validCookie, (req, res) => {
+app.get("/u/:shortURL", (req, res) => {
   const longURL = req.params.longURL;
   res.redirect(longURL);
 });
@@ -102,7 +106,7 @@ generateRandomString = () => {
   return randomID.join('');
 };
 
-app.post("/urls", validCookie, (req, res) => {
+app.post("/urls", (req, res) => {
   const randomID = generateRandomString();
   urlDatabase[`${randomID}`] = req.body.longURL;
   const templateVars = {
