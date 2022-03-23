@@ -91,7 +91,16 @@ app.get('/urls/:shortURL', (req, res) => {
     longURL: urlDatabase[req.params.shortURL]
   };
   res.render('urlsShow', templateVars);
-})
+});
+
+app.post('/urls/edit/:shortURL', (req, res) => {
+  const templateVars = {
+    username: req.cookies["username"],
+    shortURL: req.params.shortURL,
+    longURL: urlDatabase[req.params.shortURL]
+  };
+  res.render('urlsEdit', templateVars)
+});
 
 app.post('/urls/:shortURL/delete', (req, res) => {
   const templateVars = {
