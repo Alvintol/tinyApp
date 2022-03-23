@@ -3,6 +3,7 @@ const { set, redirect, clearCookie } = require('express/lib/response');
 const res = require('express/lib/response');
 const morgan = require('morgan');
 const cookieParser = require('cookie-parser');
+const users = require('./users');
 const PORT = 8080;
 const app = express();
 
@@ -18,28 +19,14 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
-const users = {
-  "userRandomID": {
-    id: "userRandomID", 
-    email: "user@example.com", 
-    password: "purple-monkey-dinosaur"
-  },
- "user2RandomID": {
-    id: "user2RandomID", 
-    email: "user2@example.com", 
-    password: "dishwasher-funk"
+generateRandomString = () => {
+  const charList = "abcdefghijklmnopqrstuvwxyz0123456789"
+  const randomID = [];
+  while (randomID.length < 6) {
+    randomID.push(charList[Math.floor(Math.random() * charList.length)]);
   }
-}
-
-// const validCookie = (req, res, next) => {
-//   const { cookies } = req;
-//   if (cookies) {
-//     res.status(403).send({ERROR_403: 'Not Authenticated. Please login'});
-//     next();
-//   } else {
-//     next();
-//   }
-// };
+  return randomID.join('');
+};
 
 app.get('/', (req, res) => {
   res.send('Hello!');
@@ -50,7 +37,7 @@ app.get('/login', (req, res) => {
 })
 
 app.post('/login', (req, res) => {
-  if (req.body.username === ''){
+  if (req.body.username === '') {
     res.render('login');
     return;
   }
@@ -58,9 +45,34 @@ app.post('/login', (req, res) => {
   res.redirect('/urls');
 });
 
-app.post('/register', (req, res) => {
+app.get('/users', (req, res) => {
+  res.json(users);
+});
+
+app.get('/users/:id', (req, res) => {
+  for (const user in users) {
+    if (user == req.params.id) {
+      res.json(users[user])
+    } else {
+      res.status(400).json({ msg: `User ${req.params.id} not found` })
+    }
+  }
+});
+
+app.get('/register', (req, res) => {
   res.render('register');
 });
+
+app.post('/register', (req, res) => {
+  const randomID = generateRandomString();
+  users[randomID] = {
+    id: id,
+    email: email,
+    password: password
+  }
+  console.log(users);
+  res.render('urlsShow', users[randomID])
+})
 
 app.post('/logout', (req, res) => {
   res.clearCookie('username', req.body.username);
@@ -76,6 +88,8 @@ app.get("/urls", (req, res) => {
     username: req.cookies['username'],
     urls: urlDatabase
   };
+
+  console.log(users)
   res.render("urlsIndex", templateVars);
 });
 
@@ -122,15 +136,6 @@ app.get("/u/:shortURL", (req, res) => {
 app.get('/hello', (req, res) => {
   res.send('<html><body>Hello <b>World</b></body></html>\n');
 });
-
-generateRandomString = () => {
-  const charList = "abcdefghijklmnopqrstuvwxyz0123456789"
-  const randomID = [];
-  while (randomID.length < 6) {
-    randomID.push(charList[Math.floor(Math.random() * charList.length)]);
-  }
-  return randomID.join('');
-};
 
 app.post("/urls", (req, res) => {
   const randomID = generateRandomString();
