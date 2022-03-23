@@ -4,7 +4,7 @@ const res = require('express/lib/response');
 const morgan = require('morgan');
 const cookieParser = require('cookie-parser');
 const users = require('./users');
-const PORT = 8080;
+const PORT = process.env.PORT || 8080;
 const app = express();
 
 const bodyParser = require("body-parser");
@@ -66,6 +66,7 @@ app.post('/register', (req, res) => {
     urls: urlDatabase,
   }
   res.cookie('userCookie', randomID)
+  console.log(users)
   res.render('urlsIndex', templateVars);
 });
 
@@ -100,7 +101,7 @@ app.get("/urls.json", (req, res) => {
 
 app.get("/urls", (req, res) => {
   const templateVars = {
-    id: req.body.email,
+    id: users[req.cookies.userCookie].email,
     urls: urlDatabase,
   };
   console.log(users)
@@ -108,15 +109,17 @@ app.get("/urls", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
+  console.log('USERS:', users)
+  console.log('REQ:', req.cookies.userCookie)
   const templateVars = {
-    id: req.body.email
+    id: users[req.cookies.userCookie].email
   };
   res.render("urlsNew", templateVars);
 });
 
 app.get('/urls/:shortURL', (req, res) => {
   const templateVars = {
-    id: req.body.email,
+    id: users[req.cookies.userCookie].email,
   };
   // for (const user in users) {}
   res.render('urlsShow', templateVars);
@@ -124,7 +127,9 @@ app.get('/urls/:shortURL', (req, res) => {
 
 app.post('/urls/edit/:shortURL', (req, res) => {
   const templateVars = {
-    id: req.body.email,
+    id: users[req.cookies.userCookie].email,
+    shortURL: req.params.shortURL,
+    longURL: urlDatabase[req.params.shortURL]
 
   };
   res.render('urlsEdit', templateVars)
@@ -132,14 +137,15 @@ app.post('/urls/edit/:shortURL', (req, res) => {
 
 app.post('/urls/:shortURL/delete', (req, res) => {
   const templateVars = {
-    id: req.body.email,
-
+    id: users[req.cookies.userCookie].email,
+    shortURL: req.params.shortURL,
+    longURL: urlDatabase[req.params.shortURL],
+    urls: urlDatabase
   };
   console.log('URL Deleted: ', templateVars);
   delete urlDatabase[req.params.shortURL];
-  res.render('urlsShow', templateVars);
+  res.render('urlsIndex', templateVars);
 })
-
 
 app.get("/u/:shortURL", (req, res) => {
   const longURL = req.params.longURL;
@@ -155,7 +161,7 @@ app.post("/urls", (req, res) => {
   urlDatabase[`${randomID}`] = req.body.longURL;
 
   const templateVars = {
-    id: req.body.email,
+    id: users[req.cookies.userCookie].email,
     shortURL: randomID,
     longURL: urlDatabase[randomID]
   };
@@ -163,6 +169,10 @@ app.post("/urls", (req, res) => {
   res.render('urlsShow', templateVars);
 });
 
+app.get('*', (req, res) => {
+  return res.redirect('/urlsShow');
+})
+
 app.listen(PORT, () => {
-  console.log(`Example app listneing on port ${PORT}!`);
+  console.log(`Example app listening on port ${PORT}!`);
 });
