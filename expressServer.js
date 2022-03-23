@@ -47,38 +47,40 @@ app.post('/login', (req, res) => {
 
 app.post('/register', (req, res) => {
   const randomID = generateRandomString();
+
   users[randomID] = {
     id: randomID,
     email: req.body.email,
-    password: req.body.password
-  }
+    password: req.body.password,
+  };
   console.log('New User Created:', users[randomID]);
-  
-  if (!users[randomID].password || !users[randomID].email) {
-    return res.status(400).json({msg: 'Please include password and email'})
-  } 
-  res.redirect('/login');
-});
 
-app.get('/users/:id', (req, res) => {
-  for (const user in users) {
-    if (user == req.params.id) {
-      res.json(users[user])
-    } else {
-      res.status(400).json({ msg: `User ${req.params.id} not found` })
-    }
-  }
+  if (!users[randomID].password || !users[randomID].email) {
+    return res.status(400).json({ msg: 'Please include password and email' })
+  };
+  res.cookie('user_id', randomID)
+  res.redirect('urls');
 });
 
 app.get('/register', (req, res) => {
   res.render('register');
 });
 
-app.post('/users', (req, res) => {
-  const randomID = generateRandomString();
-  res.send(req.body);
-  
-})
+// app.get('/users/:id', (req, res) => {
+//   for (const user in users) {
+//     if (user == req.params.id) {
+//       res.json(users[user])
+//     } else {
+//       res.status(400).json({ msg: `User ${req.params.id} not found` })
+//     }
+//   }
+// });
+
+// app.post('/users', (req, res) => {
+//   const randomID = generateRandomString();
+//   res.send(req.body);
+
+// })
 
 app.post('/logout', (req, res) => {
   res.clearCookie('username', req.body.username);
@@ -92,9 +94,9 @@ app.get("/urls.json", (req, res) => {
 app.get("/urls", (req, res) => {
   const templateVars = {
     username: req.cookies['username'],
-    urls: urlDatabase
+    urls: urlDatabase,
+    users: users
   };
-
   console.log(users)
   res.render("urlsIndex", templateVars);
 });
@@ -147,15 +149,13 @@ app.post("/urls", (req, res) => {
   const randomID = generateRandomString();
   urlDatabase[`${randomID}`] = req.body.longURL;
   const templateVars = {
-    username: req.cookies["username"],
+    username: req.cookies['username'],
     shortURL: randomID,
     longURL: urlDatabase[randomID]
   };
   console.log('New URL stored: ', templateVars);
   res.render('urlsShow', templateVars);
 });
-
-
 
 app.listen(PORT, () => {
   console.log(`Example app listneing on port ${PORT}!`);
