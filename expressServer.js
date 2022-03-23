@@ -23,7 +23,6 @@ app.get('/', (req, res) => {
 });
 
 app.get('/login', (req, res) => {
-  console.log(req)
   res.render('login');
 })
 
@@ -33,6 +32,10 @@ app.post('/login', (req, res) => {
   console.log(cookies)
   res.redirect('/urls');
 });
+
+app.post('/logout', (req, res) => {
+  res.render('login');
+})
 
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
@@ -67,7 +70,6 @@ app.post('/urls/:shortURL/delete', (req, res) => {
   delete urlDatabase[req.params.shortURL];
   res.redirect('/urls');
 })
-
 
 
 app.get("/u/:shortURL", (req, res) => {

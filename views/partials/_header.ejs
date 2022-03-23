@@ -1,5 +1,6 @@
 <header>
-  <nav class="navbar navbar-expand-md navbar-dark bg-success">
+  <nav class="navbar navbar-expand-md navbar-dark" style="background: rgb(2,0,36);
+  background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(9,9,121,1) 35%, rgba(0,212,255,1) 100%);">
     <a class="navbar-brand" href="/urls">TinyApp</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup"
       aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
@@ -9,13 +10,18 @@
       <div class="navbar-nav container">
         <a class="nav-item nav-link" href="/urls">My URLs</a>
         <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
-        <div class="fit-container font-weight-bold" style=" display: flex; justify-content: space-evenly; position: absolute; right: 15px; ">
-          <div id='username' style="padding: 5%; display: flex; flex-direction: column; justify-content: end;">
-            <%- username %>
-          </div>
-          <button type="submit" class="btn btn-danger" style="position: relative; opacity: 0.9;">Logout</button>
-        </div>
+        <form action="/logout" method="post">
+          <div class="fit-container font-weight-bold"
+            style=" display: flex; justify-content: space-evenly; position: absolute; right: 15px; ">
+            <div id='username'
+              style="padding: 5%; display: flex; flex-direction: column; justify-content: end; opacity: 0.6;">
+              <%- username %>
+            </div>
+            <button action="/login" type="submit" class="btn btn-danger"
+              style="position: relative; opacity: 0.9;">Logout</button>
+        </form>
       </div>
+    </div>
     </div>
   </nav>
 </header>
