@@ -45,8 +45,19 @@ app.post('/login', (req, res) => {
   res.redirect('/urls');
 });
 
-app.get('/users', (req, res) => {
-  res.json(users);
+app.post('/register', (req, res) => {
+  const randomID = generateRandomString();
+  users[randomID] = {
+    id: randomID,
+    email: req.body.email,
+    password: req.body.password
+  }
+  console.log('New User Created:', users[randomID]);
+  
+  if (!users[randomID].password || !users[randomID].email) {
+    return res.status(400).json({msg: 'Please include password and email'})
+  } 
+  res.redirect('/login');
 });
 
 app.get('/users/:id', (req, res) => {
@@ -63,15 +74,10 @@ app.get('/register', (req, res) => {
   res.render('register');
 });
 
-app.post('/register', (req, res) => {
+app.post('/users', (req, res) => {
   const randomID = generateRandomString();
-  users[randomID] = {
-    id: id,
-    email: email,
-    password: password
-  }
-  console.log(users);
-  res.render('urlsShow', users[randomID])
+  res.send(req.body);
+  
 })
 
 app.post('/logout', (req, res) => {
