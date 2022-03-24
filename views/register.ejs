@@ -21,20 +21,16 @@
     <h5 style="text-align: center; text-decoration: underline;">Registration</h5>
     <div style="width: 100%; display: flex; justify-content: center;">
       <form action="/register" method="post" class="container"
-        style="display: flex; flex-direction: column; position: relative; justify-content: center; margin: 2%; width: 26%;">
-        <div class="row row-inline" style="display: flex; justify-content: space-between;">
-          <label for="id">Username</label>
-          <input style="margin-left: 2px" type="text" name="id" placeholder="Username">
+        style="display: flex; flex-direction: column; position: relative; justify-content: center; margin: 2%; width: 25%;">
+        <div class="row row-inline"  style="display: flex; justify-content: space-between;">
+          <label for="email">Email</label>
+          <input type="email" name="email" placeholder="Email">
         </div>
         <div class="row row-inline"  style="display: flex; justify-content: space-between;">
           <label for="password">Password</label>
-          <input style="margin-left: 2px" type="password" name="password" placeholder="Password">
+          <input type="password" name="password" placeholder="Password">
         </div>
-        <div class="row row-inline"  style="display: flex; justify-content: space-between;">
-          <label for="email">Email</label>
-          <input style="margin-left: 2px" type="name" name="email" placeholder="Email">
-        </div>
-        <button class="btn btn-sm btn-outline-success" style="margin-top: 5%;" type="submit">Register</button>
+        <button class="btn btn-sm btn-outline-success" style="margin-top: 5%; width: 100%" type="submit">Register</button>
       </form>
     </div>
     <hr>
