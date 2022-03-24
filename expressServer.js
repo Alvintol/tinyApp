@@ -3,6 +3,7 @@ const { set, redirect, clearCookie, get } = require('express/lib/response');
 const res = require('express/lib/response');
 const morgan = require('morgan');
 const cookieParser = require('cookie-parser');
+const bcrypt = require('bcryptjs');
 const users = require('./data/users');
 const urlDatabase = require('./data/urlDatabase');
 const PORT = process.env.PORT || 8080;
@@ -68,13 +69,14 @@ app.post('/register', (req, res) => {
   users[randomID] = {
     id: randomID,
     email: req.body.email,
-    password: req.body.password,
+    password: bcrypt.hashSync(req.body.password, 10),
   };
   console.log('New User Created:', users[randomID]);
 
   const templateVars = {
     email: req.body.email,
     urls: urlDatabase,
+    cookie: req.cookies.userCookie
   }
 
   if (!users[randomID].password || !users[randomID].email) {
@@ -85,7 +87,7 @@ app.post('/register', (req, res) => {
       return res.status(400).json({ ERROR_400: 'Email already registered' })
     } else {
       res.cookie('userCookie', randomID)
-      res.render('urlsIndex', templateVars);
+      return res.render('urlsIndex', templateVars);
     }
   }
 });
@@ -167,28 +169,28 @@ app.get("/urls", (req, res) => {
 
 app.post("/urls", (req, res) => {
   if (req.cookies.userCookie) {
-  const randomID = generateRandomString();
-  urlDatabase[`${randomID}`] = {
-    shostURL: randomID,
-    longURL: req.body.longURL,
-    userID: req.cookies.userCookie
-  };
-  const templateVars = {
-    email: users[req.cookies.userCookie].email,
-    shortURL: randomID,
-    longURL: req.body.longURL,
-    cookie: req.cookies.userCookie,
-    urls: urlDatabase
-  };
-  console.log('New URL stored: ', {
-    shortURL: templateVars.shortURL,
-    longURL: templateVars.longURL,
-    userID: req.cookies.userCookie
-  });
-  res.render('urlsShow', templateVars);
-} else {
-  res.redirect('/login')
-}
+    const randomID = generateRandomString();
+    urlDatabase[`${randomID}`] = {
+      shostURL: randomID,
+      longURL: req.body.longURL,
+      userID: req.cookies.userCookie
+    };
+    const templateVars = {
+      email: users[req.cookies.userCookie].email,
+      shortURL: randomID,
+      longURL: req.body.longURL,
+      cookie: req.cookies.userCookie,
+      urls: urlDatabase
+    };
+    console.log('New URL stored: ', {
+      shortURL: templateVars.shortURL,
+      longURL: templateVars.longURL,
+      userID: req.cookies.userCookie
+    });
+    res.render('urlsShow', templateVars);
+  } else {
+    res.redirect('/login')
+  }
 });
 
 app.get('*', (req, res) => {
