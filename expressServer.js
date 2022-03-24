@@ -26,24 +26,29 @@ generateRandomString = () => {
 };
 
 app.get('/', (req, res) => {
-  res.redirect('/urls');
-});
+  if (req.cookies.userCookie) {
+    res.redirect('/urls');
+  } else {
+    res.render('login');
+  }
+}
+);
 
 app.get('/login', (req, res) => {
   if (req.cookies.userCookie) {
     return res.redirect('/urls');
+  }else {
+    res.render('login');
   }
-  res.render('login');
 })
 
 app.post('/login', (req, res, next) => {
   const randomID = generateRandomString();
-  console.log(req.body);
   for (const user in users) {
-    if (users[user].email == req.body.email && req.body.password !== users[user].password) {
+  if (users[user].email == req.body.email && !bcrypt.compareSync(req.body.password, users[user].password)) {
       return res.status(403).json({ msg: 'Entered Wrong Password' })
     }
-    else if (users[user].email == req.body.email) {
+    else if (users[user].email == req.body.email &&bcrypt.compareSync(req.body.password, users[user].password)) {
       const templateVars = {
         id: randomID,
         email: users[user].email,
