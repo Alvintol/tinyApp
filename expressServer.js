@@ -36,22 +36,28 @@ app.get('/login', (req, res) => {
   res.render('login');
 })
 
-app.post('/login', (req, res) => {
+app.post('/login', (req, res, next) => {
+  const randomID = generateRandomString();
   for (const user in users) {
-
-    if (users[user].email == req.body.email && req.body.password !== users[user].password){
+    if (users[user].email == req.body.email && req.body.password !== users[user].password) {
       return res.status(403).json({ msg: 'Entered Wrong Password' })
     }
-    if (users[user].email == req.body.email) {
+    else if (users[user].email == req.body.email) {
       const templateVars = {
-        id: users[user].id,
+        // id: users[user].id,
+        id: users[user].email,
         email: users[user].email,
         urls: urlDatabase
       }
-      res.cookie('userCookie', req.body.email);
+      res.cookie('userCookie', randomID);
+      users[user].id = randomID;
+      console.log(`${users[user].email} just logged in`);
       res.render('urlsIndex', templateVars);
+      return;
+    } else {
+      return res.status(404).json({ ERROR_404: 'Email not registered' });
     }
-  }return res.status(404).json({ ERROR_404: 'Email not registered' });
+  }
 });
 
 app.post('/register', (req, res) => {
@@ -86,21 +92,6 @@ app.get('/register', (req, res) => {
   res.render('register');
 });
 
-// app.get('/users/:id', (req, res) => {
-//   for (const user in users) {
-//     if (user == req.params.id) {
-//       res.json(users[user])
-//     } else {
-//       res.status(400).json({ msg: `User ${req.params.id} not found` })
-//     }
-//   }
-// });
-
-// app.post('/users', (req, res) => {
-//   const randomID = generateRandomString();
-//   res.send(req.body);
-
-// })
 
 app.post('/logout', (req, res) => {
   res.clearCookie('username', req.body.username);
@@ -122,7 +113,8 @@ app.get("/urls", (req, res) => {
 
 app.get("/urls/new", (req, res) => {
   console.log('USERS:', users)
-  console.log('REQ:', req.cookies.userCookie)
+  // console.log('REQ:', req)
+  console.log('COOKIE:', req.cookies.userCookie)
   const templateVars = {
     id: users[req.cookies.userCookie].email
   };
@@ -164,10 +156,6 @@ app.get("/u/:shortURL", (req, res) => {
   res.redirect(longURL);
 });
 
-app.get('/hello', (req, res) => {
-  res.send('<html><body>Hello <b>World</b></body></html>\n');
-});
-
 app.post("/urls", (req, res) => {
   const randomID = generateRandomString();
   urlDatabase[`${randomID}`] = req.body.longURL;
@@ -182,8 +170,24 @@ app.post("/urls", (req, res) => {
 });
 
 app.get('*', (req, res) => {
-  return res.redirect('/urlsShow');
-})
+  return res.status(404).send({ ERROR_404: 'Page non-exist' })
+});
+
+// app.get('/users/:id', (req, res) => {
+//   for (const user in users) {
+//     if (user == req.params.id) {
+//       res.json(users[user])
+//     } else {
+//       res.status(400).json({ msg: `User ${req.params.id} not found` })
+//     }
+//   }
+// });
+
+// app.post('/users', (req, res) => {
+//   const randomID = generateRandomString();
+//   res.send(req.body);
+
+// })
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
