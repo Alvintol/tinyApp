@@ -37,15 +37,21 @@ app.get('/login', (req, res) => {
 })
 
 app.post('/login', (req, res) => {
-  if (!users[req.body.email]) {
-    res.render('register');
-    return;
-  }
-  // if (users[req.body.email].password !== req.body.password) {
-  //   return res.status(403).json({ msg: 'Entered Wrong Password' })
-  // }
-  res.cookie('userID', req.body.email);
-  res.redirect('/urls');
+  for (const user in users) {
+
+    if (users[user].email == req.body.email && req.body.password !== users[user].password){
+      return res.status(403).json({ msg: 'Entered Wrong Password' })
+    }
+    if (users[user].email == req.body.email) {
+      const templateVars = {
+        id: users[user].id,
+        email: users[user].email,
+        urls: urlDatabase
+      }
+      res.cookie('userCookie', req.body.email);
+      res.render('urlsIndex', templateVars);
+    }
+  }return res.status(404).json({ ERROR_404: 'Email not registered' });
 });
 
 app.post('/register', (req, res) => {
