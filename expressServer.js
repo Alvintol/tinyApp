@@ -33,6 +33,9 @@ app.get('/', (req, res) => {
 });
 
 app.get('/login', (req, res) => {
+  if (req.cookies.userCookie) {
+    return res.redirect('/urls');
+  }
   res.render('login');
 })
 
@@ -40,7 +43,7 @@ app.post('/login', (req, res, next) => {
   const randomID = generateRandomString();
   console.log(req.body);
   for (const user in users) {
-   if (users[user].email == req.body.email && req.body.password !== users[user].password) {
+    if (users[user].email == req.body.email && req.body.password !== users[user].password) {
       return res.status(403).json({ msg: 'Entered Wrong Password' })
     }
     else if (users[user].email == req.body.email) {
@@ -53,8 +56,13 @@ app.post('/login', (req, res, next) => {
       console.log(`${users[user].email} just logged in`, req.body);
       res.render('urlsIndex', templateVars);
       return;
-    } 
-  }return res.status(404).json({ ERROR_404: 'Email not registered' });
+    }
+  } return res.status(404).json({ ERROR_404: 'Email not registered' });
+});
+
+app.post('/logout', (req, res) => {
+  res.clearCookie('userCookie', req.body.userCookie);
+  res.render('login');
 });
 
 app.post('/register', (req, res) => {
@@ -86,45 +94,40 @@ app.post('/register', (req, res) => {
 });
 
 app.get('/register', (req, res) => {
+  if (req.cookies.userCookie) {
+    return res.redirect('/urls');
+  }
   res.render('register');
 });
 
-
-app.post('/logout', (req, res) => {
-  res.clearCookie('userCookie', req.body.userCookie);
-  res.render('login');
-});
-
-app.get("/urls.json", (req, res) => {
-  res.json(urlDatabase);
-});
-
 app.get("/urls", (req, res) => {
-  const templateVars = {
-    email: users[req.cookies.userCookie].email,
-    urls: urlDatabase,
-  };
-  console.log('REQ:', req);
-  res.render("urlsIndex", templateVars);
+  if (req.cookies.userCookie) {
+    const templateVars = {
+      email: users[req.cookies.userCookie].email,
+      urls: urlDatabase,
+    };
+    return res.render("urlsIndex", templateVars);
+  }
+  return res.redirect('/login');
 });
 
 app.get("/urls/new", (req, res) => {
-  const templateVars = {
-    email: users[req.cookies.userCookie].email
-  };
-  console.log('USERS:', users)
-  // console.log('REQ:', req)
-  console.log('COOKIE:', req.cookies.userCookie)
-
-  res.render("urlsNew", templateVars);
+  if (req.cookies.userCookie) {
+    const templateVars = {
+      email: users[req.cookies.userCookie].email
+    };
+    res.render("urlsNew", templateVars);
+  } return res.redirect('/urls');
 });
 
 app.get('/urls/:shortURL', (req, res) => {
-  const templateVars = {
-    email: users[req.cookies.userCookie].email,
-  };
-  // for (const user in users) {}
-  res.render('urlsShow', templateVars);
+  if (req.cookies.userCookie) {
+    const templateVars = {
+      email: users[req.cookies.userCookie].email,
+    };
+    res.render('urlsShow', templateVars);
+  }
+  return res.redirect('/urls');
 });
 
 app.post('/urls/edit/:shortURL', (req, res) => {
@@ -163,7 +166,6 @@ app.post("/urls", (req, res) => {
     shortURL: randomID,
     longURL: urlDatabase[randomID]
   };
-  console.log('REQ:', req)
   console.log('New URL stored: ', { shortURL: templateVars.shortURL, longURL: templateVars.longURL });
   res.render('urlsShow', templateVars);
 });
@@ -171,22 +173,6 @@ app.post("/urls", (req, res) => {
 app.get('*', (req, res) => {
   return res.status(404).send({ ERROR_404: 'Page non-exist' })
 });
-
-// app.get('/users/:id', (req, res) => {
-//   for (const user in users) {
-//     if (user == req.params.id) {
-//       res.json(users[user])
-//     } else {
-//       res.status(400).json({ msg: `User ${req.params.id} not found` })
-//     }
-//   }
-// });
-
-// app.post('/users', (req, res) => {
-//   const randomID = generateRandomString();
-//   res.send(req.body);
-
-// })
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
