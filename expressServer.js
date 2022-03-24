@@ -1,14 +1,14 @@
 const express = require('express');
-const { set, redirect, clearCookie, get } = require('express/lib/response');
-const res = require('express/lib/response');
 const morgan = require('morgan');
 const cookieSession = require('cookie-session');
 const bcrypt = require('bcryptjs');
 const users = require('./data/users');
 const urlDatabase = require('./data/urlDatabase');
+const { getUserByEmail, generateRandomString } = require('./helpers');
+
 const PORT = process.env.PORT || 8080;
 const app = express();
-
+const randomID = generateRandomString();
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -17,59 +17,23 @@ app.use(morgan('dev'));
 app.use(cookieSession({
   name: 'session',
   keys: ['icle', '13a(0/V', 'bits', 'test',],
-
   maxAge: 24 * 60 * 60 * 1000
 }))
 
-generateRandomString = () => {
-  const charList = "abcdefghijklmnopqrstuvwxyz0123456789"
-  const randomID = [];
-  while (randomID.length < 6) {
-    randomID.push(charList[Math.floor(Math.random() * charList.length)]);
-  }
-  return randomID.join('');
-};
+app.get('/', (req, res) => req.session.user ? res.redirect('/urls') : res.render('login'));
 
-app.get('/', (req, res) => {
-  if (req.session.user) {
-    res.redirect('/urls');
-  } else {
-    res.render('login');
-  }
-}
-);
-
-app.get('/login', (req, res) => {
-  if (req.session.user) {
-    return res.redirect('/urls');
-  }else {
-    res.render('login');
-  }
-})
+app.get('/login', (req, res) => req.session.user ? res.redirect('/urls') : res.render('login'));
 
 app.post('/login', (req, res) => {
-  // const randomID = generateRandomString();
-  for (const user in users) {
-  if (users[user].email == req.body.email && !bcrypt.compareSync(req.body.password, users[user].password)) {
-      return res.status(403).json({ msg: 'Entered Wrong Password' })
-    }
-    else if (users[user].email == req.body.email &&bcrypt.compareSync(req.body.password, users[user].password)) {
-      // const templateVars = {
-      //   id: randomID,
-      //   email: users[user].email,
-      //   urls: urlDatabase,
-      //   cookie: req.session.user
-      // }
-      // res.cookie('userCookie', user);
-      req.session.user = user;
-      // console.log('SESSIONCOOKIE:', req.session.user)
-      // console.log('REQ:', req)
-      // console.log('REQ:', req.session)
-      console.log(`${users[user].email} just logged in`);
-      res.redirect('/urls');
-      return;
-    }
-  } return res.status(404).json({ ERROR_404: 'Email not registered' });
+  const user = getUserByEmail(req.body.email, users);
+  if (!user) {
+    return res.status(404).json({ ERROR_404: 'Email not registered' });
+  } if (user && !bcrypt.compareSync(req.body.password, users[user].password)) {
+    return res.status(403).json({ msg: 'Entered Wrong Password' })
+  }
+  req.session.user = users[user].id;
+  console.log(`${user} just logged in`);
+  return res.redirect('/urls');
 });
 
 app.post('/logout', (req, res) => {
@@ -78,7 +42,7 @@ app.post('/logout', (req, res) => {
 });
 
 app.post('/register', (req, res) => {
-  const randomID = generateRandomString();
+  const user = getUserByEmail(req.body.email, users);
 
   users[randomID] = {
     id: randomID,
@@ -93,25 +57,12 @@ app.post('/register', (req, res) => {
     cookie: req.session.user
   }
 
-  if (!users[randomID].password || !users[randomID].email) {
-    return res.status(400).json({ ERROR_400: 'Please include password and email' })
-  };
-  for (const user in users) {
-    if (users[user].email == req.body.email) {
-      return res.status(400).json({ ERROR_400: 'Email already registered' })
-    } else {
-      req.session.user = randomID;
-      return res.render('urlsIndex', templateVars);
-    }
-  }
+  user ? res.status(400).json({ ERROR_400: 'Email already registered' }) :
+    req.session.user = randomID;
+  res.render('urlsIndex', templateVars);
 });
 
-app.get('/register', (req, res) => {
-  if (req.session.user) {
-    return res.redirect('/urls');
-  }
-  res.render('register');
-});
+app.get('/register', (req, res) => req.session.user ? res.redirect('/urls') : res.render('register'));
 
 app.get("/urls/new", (req, res) => {
   if (req.session.user) {
@@ -159,15 +110,10 @@ app.post('/urls/:shortURL/delete', (req, res) => {
     console.log('URL Deleted: ', { longURL: urlDatabase[req.params.shortURL].longURL });
     delete urlDatabase[req.params.shortURL];
     return res.render('urlsIndex', templateVars);
-  } else {
-    return res.redirect('/urls');
-  }
+  } return res.redirect('/urls');
 })
 
-app.get("/u/:shortURL", (req, res) => {
-  const longURL = urlDatabase[req.params.shortURL].longURL;
-  res.redirect(longURL);
-});
+app.get("/u/:shortURL", (req, res) => res.redirect(urlDatabase[req.params.shortURL].longURL));
 
 app.get("/urls", (req, res) => {
   if (req.session.user) {
@@ -183,7 +129,6 @@ app.get("/urls", (req, res) => {
 
 app.post("/urls", (req, res) => {
   if (req.session.user) {
-    const randomID = generateRandomString();
     urlDatabase[`${randomID}`] = {
       shostURL: randomID,
       longURL: req.body.longURL,
@@ -207,10 +152,6 @@ app.post("/urls", (req, res) => {
   }
 });
 
-app.get('*', (req, res) => {
-  return res.status(404).send({ ERROR_404: 'Page non-exist' })
-});
+app.get('*', (req, res) => res.status(404).send({ ERROR_404: 'Page non-exist' }));
 
-app.listen(PORT, () => {
-  console.log(`Example app listening on port ${PORT}!`);
-});
+app.listen(PORT, () => console.log(`Example app listening on port ${PORT}!`));
