@@ -6,27 +6,32 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
 
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"
+    integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
   <title>TinyApp</title>
 </head>
 
 <body>
   <main>
-    <div style="background: rgb(2,0,36);
-    background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(9,9,121,1) 35%, rgba(0,212,255,1) 100%); width: 100%; height: 50px;"></div>
+    <div
+      style="background: rgb(2,0,36);
+    background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(9,9,121,1) 35%, rgba(0,212,255,1) 100%); width: 100%; height: 50px;">
+    </div>
     <h2 style="text-align: center; z-index: 3;">Welcome to TinyApp</h2>
-
-    <form action="/login" method="post" style="display: flex; flex-direction: row; position: relative; justify-content: center; margin: 2%;">
+    <h6 class='animate fade-out-down' style="text-align: center; color: rgb(30, 194, 30)">Please Login!</h6>
+    <form action="/login" method="post"
+      style="display: flex; flex-direction: row; position: relative; justify-content: center; margin: 2%;">
       <input type="email" name="email" placeholder="email">
-      <input type="password" name="password" placeholder="password" >
+      <input type="password" name="password" placeholder="password">
       <button type="submit" class="btn btn-primary">Login</button>
     </form>
-    <form action='/register' method="GET" style="display: flex; flex-direction: row; position: relative; justify-content: center; margin: 2%;">
+    <form action='/register' method="GET"
+      style="display: flex; flex-direction: row; position: relative; justify-content: center; margin: 2%;">
       <div>New User?</div>
       <button class="btn btn-sm  btn-outline-success" style="margin-left: 2%">Register</button>
     </form>
-  <hr>
-  <hr>
+    <hr>
+    <hr>
   </main>
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
     integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
