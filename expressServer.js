@@ -88,6 +88,7 @@ app.post("/urls", (req, res) => {
     longURL: req.body.longURL,
     cookie: req.session.user,
     urls: urlDatabase,
+    date: getDate()
   };
   if (req.session.user) {
     urlDatabase[`${randomID}`] = {
