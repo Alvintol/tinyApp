@@ -17,6 +17,7 @@
       <table class="table" style="border:ridge; background-color:lightgrey ;">
         <thead>
           <tr>
+            <th scope="col">Date Created</th>
             <th scope="col">Short URL</th>
             <th scope="col">Long URL</th>
             <th scope="col" style="text-align: center;">Edit</th>
@@ -27,6 +28,9 @@
           <% for (let url in urls ) {%>
             <% if (urls[url].userID===cookie ) {%>
               <tr>
+                <td>
+                  <%= date %>
+                </td>
                 <td>
                   <%= url %>
                 </td>

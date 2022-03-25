@@ -14,12 +14,16 @@ TinyApp is a full stack web application built with Node and Express that allows 
 
 ## Dependencies
 
-- Node.js
-- Express
-- EJS
-- bcrypt
-- body-parser
-- cookie-session
+- Node.js : Server Environment
+- Express : Framework
+- EJS : Javascript Incorporated Template enabling
+- bcrypt : Hashing for passwords
+- body-parser : Middleware for parsing response bodies    
+- cookie-session : Middleware for parsing cookies
+- nodemon : Command-Line Interface to scan for file changes
+- Mocha : Testing Framework 
+- Chai : Testing Framework
+- morgan : Middleware for Request logging
 
 
 ## Getting Started

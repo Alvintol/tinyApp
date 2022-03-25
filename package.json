@@ -1,7 +1,7 @@
 {
   "name": "tinyapp",
   "version": "1.0.0",
-  "description": "",
+  "description": "URL Shortener",
   "main": "expressServer.js",
   "scripts": {
     "start": "./node_modules/.bin/nodemon -L expressServer.js",

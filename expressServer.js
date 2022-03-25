@@ -4,7 +4,7 @@ const cookieSession = require('cookie-session');
 const bcrypt = require('bcryptjs');
 const users = require('./data/users');
 const urlDatabase = require('./data/urlDatabase');
-const { getUserByEmail, generateRandomString } = require('./helpers');
+const { getUserByEmail, generateRandomString, getDate } = require('./helpers');
 
 const PORT = process.env.PORT || 8080;
 const app = express();
@@ -30,6 +30,7 @@ app.get("/urls", (req, res) => {
   const templateVars = {
     cookie: req.session.user,
     urls: urlDatabase,
+    date: getDate()
   };
   if (req.session.user) {
     templateVars.email = users[req.session.user].email;
@@ -42,26 +43,32 @@ app.get("/urls", (req, res) => {
 
 //GET /urls/new : CREATE NEW SHORT URL LINK
 app.get("/urls/new", (req, res) => {
-  const templateVars = {
-    email: users[req.session.user].email,
-    cookie: req.session.user,
+  if (req.session.user) {
+    const templateVars = {
+      email: users[req.session.user].email,
+      cookie: req.session.user,
+    };
+    return res.render("urlsNew", templateVars);
   };
-  req.session.user ? res.render("urlsNew", templateVars) : res.redirect('/login');
+  return res.redirect('/login');
 });
 
 
 //GET /urls/:id  : LOOK UP SPECIFIC URL
 app.get('/urls/:shortURL', (req, res) => {
   const templateVars = {
-    email: users[req.session.user].email,
     shortURL: req.params.shortURL,
-    longURL: urlDatabase[req.params.shortURL].longURL,
     cookie: req.session.user,
-    urls: urlDatabase
+    urls: urlDatabase,
+    date: getDate()
   };
-  !urlDatabase[req.params.shortURL] || urlDatabase[req.params.shortURL].userID !== req.session.user ?
-    res.redirect('/lost') :
-    res.render('urlsShow', templateVars);
+  if (!urlDatabase[req.params.shortURL] ||
+    urlDatabase[req.params.shortURL].userID !== req.session.user) {
+    return res.redirect('/lost');
+  };
+  templateVars.longURL = urlDatabase[req.params.shortURL].longURL
+  templateVars.email = users[req.session.user].email;
+  return res.render('urlsShow', templateVars);
 });
 
 
@@ -106,7 +113,8 @@ app.post('/urls/:shortURL', (req, res) => {
       shortURL: req.params.shortURL,
       longURL: req.body.longURL,
       cookie: req.session.user,
-      urls: urlDatabase
+      urls: urlDatabase,
+      date: getDate()
     };
     urlDatabase[req.params.shortURL].longURL = req.body.longURL;
     return res.render('urlsIndex', templateVars);
@@ -123,7 +131,8 @@ app.post('/urls/:shortURL/delete', (req, res) => {
       shortURL: req.params.shortURL,
       longURL: urlDatabase[req.params.shortURL].longURL,
       urls: urlDatabase,
-      cookie: req.session.user
+      cookie: req.session.user,
+      date: getDate()
     };
     console.log('URL Deleted: ', { longURL: urlDatabase[req.params.shortURL].longURL });
     delete urlDatabase[req.params.shortURL];
@@ -172,7 +181,7 @@ app.post('/register', (req, res) => {
   const templateVars = {
     urls: urlDatabase,
     cookie: req.session.user,
-    email: req.body.email
+    email: req.body.email,
   };
   if (user) {
     templateVars.header = 'Email already registered';
