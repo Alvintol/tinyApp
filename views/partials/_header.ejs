@@ -8,19 +8,26 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
       <div class="navbar-nav container">
-        <a class="nav-item nav-link" href="/urls">My URLs</a>
-        <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
-        <form action="/logout" method="post">
-          <div class="fit-container font-weight-bold"
-            style=" display: flex; justify-content: space-evenly; position: absolute; right: 15px; ">
-            <div id='username'
-              style="padding: 5%; display: flex; flex-direction: column; justify-content: end; opacity: 0.6;">
-              <%= email %>
+        <% if (cookie) { %>
+          <a class="nav-item nav-link" href="/urls">My URLs</a>
+          <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
+          <form action="/logout" method="post">
+            <div class="fit-container font-weight-bold"
+              style=" display: flex; justify-content: space-evenly; position: absolute; right: 15px; ">
+              <div id='username'
+                style="padding: 5%; display: flex; flex-direction: column; justify-content: end; opacity: 0.6;">
+                <%= email %>
+              </div>
+              <button action="/login" type="submit" class="btn btn-danger btn-sm"
+                style="position: relative; opacity: 0.9; margin-bottom: 2%;">Logout</button>
             </div>
-            <button action="/login" type="submit" class="btn btn-danger btn-sm"
-              style="position: relative; opacity: 0.9; margin-bottom: 2%;">Logout</button>
-          </div>
-        </form>
+          </form>
+          <% } if (!cookie) { %>
+            <a class="nav-item nav-link" href="/login">Login</a>
+            <a class="nav-item nav-link" href="/register">Register</a>
+            <a class="nav-item nav-link" style="color: rgba(0, 47, 255, 0.253);"
+              href="https://therandombutton.github.io/random.html">Random</a>
+            <% } %>
       </div>
     </div>
   </nav>
