@@ -5,6 +5,7 @@ const bcrypt = require('bcryptjs');
 const users = require('./data/users');
 const urlDatabase = require('./data/urlDatabase');
 const { getUserByEmail, generateRandomString, getDate } = require('./helpers');
+const methodOverride = require('method-override');
 
 const PORT = process.env.PORT || 8080;
 const app = express();
@@ -14,6 +15,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.set('view engine', 'ejs');
 app.use(morgan('dev'));
+app.use(methodOverride('_method'));
 app.use(cookieSession({
   name: 'session',
   keys: ['icle', '13a(0/V', 'bits', 'test',],
@@ -106,7 +108,7 @@ app.post("/urls", (req, res) => {
 
 
 //POST /urls/:id  : EXISTING URL EDIT ROUTE
-app.post('/urls/:shortURL', (req, res) => {
+app.put('/urls/edit/:shortURL', (req, res) => {
   if (urlDatabase[req.params.shortURL].userID == req.session.user && req.session.user) {
     const templateVars = {
       email: users[req.session.user].email,
@@ -124,7 +126,7 @@ app.post('/urls/:shortURL', (req, res) => {
 
 
 //POST /urls/:id/delete  : DELETES EXISTING URLS IN LIST
-app.post('/urls/:shortURL/delete', (req, res) => {
+app.delete('/urls/:shortURL', (req, res) => {
   if (urlDatabase[req.params.shortURL].userID == req.session.user && req.session.user) {
     const templateVars = {
       email: users[req.session.user].email,
