@@ -17,14 +17,14 @@ TinyApp is a full stack web application built with Node and Express that allows 
 - Node.js : Server Environment
 - Express : Framework
 - EJS : Javascript Incorporated Template enabling
-- bcrypt : Hashing for passwords
-- body-parser : Middleware for parsing response bodies    
-- cookie-session : Middleware for parsing cookies
-- nodemon : Command-Line Interface to scan for file changes
+- Bcrypt : Hashing for passwords
+- Body-Parser : Middleware for parsing response bodies    
+- Cookie-Session : Middleware for parsing cookies
+- Nodemon : Command-Line Interface to scan for file changes
+- Method-Override : Middleware to allow HTTP PUT & DELETE verbs
 - Mocha : Testing Framework 
 - Chai : Testing Framework
-- morgan : Middleware for Request logging
-
+- Morgan : Middleware for Request logging
 
 ## Getting Started
 
@@ -32,6 +32,10 @@ TinyApp is a full stack web application built with Node and Express that allows 
 - Run the development web server using the `node express_server.js` command.
 
 ### Things to note
+
+- Stretch excersises completed: 
+    - URL date creation
+    - Method-Overide for active PUT/DELETE verbs
 
 - Behaviour requirement titles(ie. GET /urls, POST /urls/:id) are searchable and commented above each route
 
