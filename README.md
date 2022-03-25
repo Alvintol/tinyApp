@@ -29,7 +29,8 @@ TinyApp is a full stack web application built with Node and Express that allows 
 ## Getting Started
 
 - Install all dependencies (using the `npm install` command).
-- Run the development web server using the `node express_server.js` command.
+- Run the development web server using the `npm start` command.
+- Clickity Click Away
 
 ### Things to note
 
@@ -37,6 +38,6 @@ TinyApp is a full stack web application built with Node and Express that allows 
     - URL date creation
     - Method-Overide for active PUT/DELETE verbs
 
-- Behaviour requirement titles(ie. GET /urls, POST /urls/:id) are searchable and commented above each route
+- Functional requirement titles(ie. GET /urls, POST /urls/:id) are searchable and commented above each route in order of Project Description for ease of search. 
 
 - Random Button: Hidden next to register button on navbar. Becuase why not. You were adventurous enough to try and find a page that doesnt exist. Why not randomly go somewhere that does?
